@@ -1,0 +1,43 @@
+Controlling /var/log/message to stop logging PBC Script syslog()
+
+ 
+
+1. Change(s) in /etc/rsyslog.conf
+
+From:   *.info;mail.none;authpriv.none;cron.none -/var/log/messages
+
+To:   *.info;mail.none;authpriv.none;cron.none;local3.none -/var/log/messages 
+
+ 
+
+2. Changes(s) in /etc/logrotate.d/syslog 
+
+Add: /var/log/XXX.log
+
+ 
+
+3. Test and Validate
+
+Commands:
+
+A & B - Standard config.
+
+C & D - Customized config.
+
+A. logger -p local3.info testMessage
+B. logger -p local3.info testMessage1
+C. logger -p local3.info testMessage2
+D. logger -p local3.info testMessage3
+
+Results; Syslog (/var/log/message): 
+
+tail -1000 /var/log/messages | grep -i testMessage*
+Aug 8 08:03:27 TLN_TG_VM-01 root: testMessage
+Aug 8 08:04:14 TLN_TG_VM-01 root: testMessage1
+Results; local3 (/var/log/pbc.log)
+
+cat /var/log/XXX.log
+Aug 8 08:03:27 TLN_TG_VM-01 root: testMessage
+Aug 8 08:04:14 TLN_TG_VM-01 root: testMessage1
+Aug 8 08:05:50 TLN_TG_VM-01 root: testMessage2
+Aug 8 08:05:55 TLN_TG_VM-01 root: testMessage3
